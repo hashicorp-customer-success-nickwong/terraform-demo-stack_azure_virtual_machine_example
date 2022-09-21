@@ -48,7 +48,7 @@ resource "random_string" "demo" {
 }
 
 module "resource_windows_virtual_machine_demo" {
-  source              = "app.terraform.io/jaredfholgate-hashicorp/resource_windows_virtual_machine/jaredholgate"
+  source              = "app.terraform.io/nw-tfc-test/resource_windows_virtual_machine/demo"
   count               = var.include_demo_vm ? 1 : 0
   name                = "demo"
   resource_group_name = var.resource_group_name
@@ -71,7 +71,7 @@ resource "tls_private_key" "vault" {
 }
 
 module "resource_linux_virtual_machine_primary" {
-  source              = "app.terraform.io/jaredfholgate-hashicorp/resource_linux_virtual_machine/jaredholgate"
+  source              = "app.terraform.io/nw-tfc-test/resource_linux_virtual_machine/demo"
   count               = var.primary_cluster_size
   name                = "${var.primary_virtual_machine_prefix}-${count.index}"
   resource_group_name = var.resource_group_name
@@ -89,7 +89,7 @@ module "resource_linux_virtual_machine_primary" {
 }
 
 module "resource_linux_virtual_machine_secondary" {
-  source              = "app.terraform.io/jaredfholgate-hashicorp/resource_linux_virtual_machine/jaredholgate"
+  source              = "app.terraform.io/nw-tfc-test/resource_linux_virtual_machine/demo"
   count               = var.secondary_cluster_size
   name                = "${var.secondary_virtual_machine_prefix}-${count.index}"
   resource_group_name = var.resource_group_name
