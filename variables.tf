@@ -18,7 +18,7 @@ variable "resource_group_name" {
 variable "location" {
   description = "The Azure Region to deploy the resources in."
   type        = string
-  default     = "UK South"
+  default     = "Canada Central"
 }
 
 variable "primary_virtual_machine_prefix" {
