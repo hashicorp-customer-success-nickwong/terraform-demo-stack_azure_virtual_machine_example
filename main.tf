@@ -1,7 +1,7 @@
 locals {
-  subnets                  = cidrsubnets(var.parent_ip_range, 8, 8, 8)
-  primary_ip_addresses      = [for index in range(10, var.primary_cluster_size + 10) : cidrhost(local.subnets[0], index)]
-  secondary_ip_addresses       = [for index in range(10, var.secondary_cluster_size + 10) : cidrhost(local.subnets[1], index)]
+  subnets                = cidrsubnets(var.parent_ip_range, 8, 8, 8)
+  primary_ip_addresses   = [for index in range(10, var.primary_cluster_size + 10) : cidrhost(local.subnets[0], index)]
+  secondary_ip_addresses = [for index in range(10, var.secondary_cluster_size + 10) : cidrhost(local.subnets[1], index)]
 }
 
 resource "azurerm_virtual_network" "main" {
@@ -40,7 +40,7 @@ data "azurerm_subscription" "current" {
 resource "random_string" "demo" {
   length      = 16
   special     = false
-  number      = true
+  numeric     = true
   upper       = true
   min_lower   = 1
   min_numeric = 1
@@ -71,37 +71,37 @@ resource "tls_private_key" "vault" {
 }
 
 module "resource_linux_virtual_machine_primary" {
-  source              = "app.terraform.io/nw-tfc-test/resource_linux_virtual_machine/demo"
-  count               = var.primary_cluster_size
-  name                = "${var.primary_virtual_machine_prefix}-${count.index}"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  size                = var.primary_vm_size
-  ssh_public_key                           = tls_private_key.vault.public_key_openssh
-  source_image_offer                       = "UbuntuServer"
-  source_image_publisher                   = "Canonical"
-  source_image_sku                         = "18.04-LTS"
-  subnet_id                                = azurerm_virtual_network.main.subnet.*.id[0]
-  static_ip_address                        = local.primary_ip_addresses[count.index]
+  source                 = "app.terraform.io/nw-tfc-test/resource_linux_virtual_machine/demo"
+  count                  = var.primary_cluster_size
+  name                   = "${var.primary_virtual_machine_prefix}-${count.index}"
+  resource_group_name    = var.resource_group_name
+  location               = var.location
+  size                   = var.primary_vm_size
+  ssh_public_key         = tls_private_key.vault.public_key_openssh
+  source_image_offer     = "UbuntuServer"
+  source_image_publisher = "Canonical"
+  source_image_sku       = "18.04-LTS"
+  subnet_id              = azurerm_virtual_network.main.subnet.*.id[0]
+  static_ip_address      = local.primary_ip_addresses[count.index]
   tags = merge({
     cluster = "primary"
   }, var.tags)
 }
 
 module "resource_linux_virtual_machine_secondary" {
-  source              = "app.terraform.io/nw-tfc-test/resource_linux_virtual_machine/demo"
-  count               = var.secondary_cluster_size
-  name                = "${var.secondary_virtual_machine_prefix}-${count.index}"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  size                = var.secondary_vm_size
-  ssh_public_key                           = tls_private_key.vault.public_key_openssh
-  source_image_offer                       = "UbuntuServer"
-  source_image_publisher                   = "Canonical"
-  source_image_sku                         = "18.04-LTS"
-  subnet_id                                = azurerm_virtual_network.main.subnet.*.id[1]
-  static_ip_address                        = local.secondary_ip_addresses[count.index]
-  has_managed_identity                     = true
+  source                 = "app.terraform.io/nw-tfc-test/resource_linux_virtual_machine/demo"
+  count                  = var.secondary_cluster_size
+  name                   = "${var.secondary_virtual_machine_prefix}-${count.index}"
+  resource_group_name    = var.resource_group_name
+  location               = var.location
+  size                   = var.secondary_vm_size
+  ssh_public_key         = tls_private_key.vault.public_key_openssh
+  source_image_offer     = "UbuntuServer"
+  source_image_publisher = "Canonical"
+  source_image_sku       = "18.04-LTS"
+  subnet_id              = azurerm_virtual_network.main.subnet.*.id[1]
+  static_ip_address      = local.secondary_ip_addresses[count.index]
+  has_managed_identity   = true
   tags = merge({
     cluster = "secondary"
   }, var.tags)
